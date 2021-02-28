@@ -22,7 +22,7 @@ function UploadProductPage(props) {
   const [ Description, setDescription ] = useState('');
   const [ Price, setPrice ] = useState(0);
   const [ Continent, setContinent ] = useState(1);
-  const [ Images, setImages ] = useState([]);
+  const [ Images, setImages ] = useState([]); // images가 이미지 정보를 가지고 있어야 하는데
 
   const titleChangeHandler = (event) => {
     setTitle(event.currentTarget.value)
@@ -39,7 +39,11 @@ function UploadProductPage(props) {
 
   const continentChangeHandelr = (event) => {
     setContinent(event.currentTarget.value)
-    
+  }
+
+  const updateImages = (newImages) => {
+    setImages(newImages)
+    // 
   }
 
 
@@ -50,7 +54,7 @@ function UploadProductPage(props) {
       </div>
       <Form>
         {/* DropZone */}
-        <FileUpload />
+        <FileUpload refreshFunction={ updateImages } />
         <br/>
         <br/>
         <label>이름</label>
