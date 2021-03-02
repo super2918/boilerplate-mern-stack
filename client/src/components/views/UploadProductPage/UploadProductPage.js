@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Typography, Button, Form, Input } from 'antd';
+import { Button, Form, Input } from 'antd';
 import FileUpload from '../../utils/FileUpload';
-
+import Axios from 'axios';
  
 const { TextArea } = Input;
 
@@ -46,15 +46,48 @@ function UploadProductPage(props) {
     // 
   }
 
+  console.log('props.user', props.user)
+
+  const submitHandler = (event) => {
+    event.preventDefault(); // 확인 버튼을 누를 때에 refresh가 되지 않는다.
+    // 유효성 검사 - 하나 이상의 State가 비워져 있을 경우에 
+    if (!Title || !Description || !Price || !Continent || !Images ) {
+      return alert('모든 값을 채워주셔야 합니다.')
+    }
+
+    // 서버에 채운 값들을 request로 보낸다.
+    const body = {
+      // 현재 로그인한 User Id 
+      writer: props.user.userData._id,
+      title: Title,
+      description: Description,
+      price: Price,
+      images: Images,
+      continents: Continent
+    }
+
+    //server route -> product.js  
+    Axios.post('/api/product', body)
+    .then( response => {
+      if(response.data.success) {
+        alert('상품 업로드에 성공하였습니다.')
+        // 상품을 저장을 한 뒤 메인 페이지로 이동 
+        props.history.push('/')
+      } else {
+        alert('상품 업로드에 실패하였습니다.')
+      }
+    })
+  }
 
   return (
     <div style={{ maxWidth: '700px', margin: '2rem auto'}}>
       <div style={{ textAlign: 'center', marginBottom: '2rem'}}>
         <h2>여행 상품 업로드</h2>
       </div>
-      <Form>
+      <Form onSubmit={ submitHandler }>
         {/* DropZone */}
         <FileUpload refreshFunction={ updateImages } />
+
         <br/>
         <br/>
         <label>이름</label>
@@ -62,7 +95,7 @@ function UploadProductPage(props) {
         <br/>
         <br/>
         <label>설명</label>
-        <TextArea onChange={ descriptionChageHandler } value={ Description } />
+        <TextArea onChange={ descriptionChageHandler } value={ Description } /> 
         <br/>
         <br/>
         <label>가격($)</label>
@@ -78,7 +111,7 @@ function UploadProductPage(props) {
         </select>
         <br/>
         <br/>
-        <Button type="submit">Submit</Button>
+        <Button htmlType="submit">Submit</Button>
       </Form>
     </div>
   );
